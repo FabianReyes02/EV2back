@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql   # named volume: persiste datos aunque el contenedor se reinicie
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot_backend
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      DB_ENDPOINT: db          # nombre del servicio MySQL dentro de la red Docker
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+# Named volume: los datos de MySQL sobreviven reinicios del contenedor
+# Se elige named volume por sobre bind mount porque Docker gestiona la ubicación
+# automáticamente, es más portable entre entornos y no depende de la estructura
+# de directorios del host (importante en EC2).
+volumes:
+  mysql_data:
+    driver: local

@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db_service2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3307:3306"   # Puerto diferente al primer servicio para evitar conflicto si corren en el mismo host
+    volumes:
+      - mysql_data_service2:/var/lib/mysql   # named volume: datos persisten ante reinicios
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot_backend_service2
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      DB_ENDPOINT: db        # nombre del servicio MySQL dentro de la red Docker
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+# Named volume elegido sobre bind mount por mayor portabilidad en EC2
+# y porque Docker gestiona la ubicación automáticamente sin depender
+# de la estructura de directorios del host.
+volumes:
+  mysql_data_service2:
+    driver: local

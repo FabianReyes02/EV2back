@@ -1,0 +1,72 @@
+name: CI/CD Backend Service2 - Build, Push & Deploy
+
+# Se activa solo con push en la rama deploy
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  build-push-deploy:
+    name: Build, Push to Docker Hub & Deploy on EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Clonar el repositorio
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      # 2. Configurar Java 17
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      # 3. Cachear dependencias Maven
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # 4. Login en Docker Hub usando secrets
+      - name: Login en Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 5. Build y Push de la imagen Docker
+      - name: Build y Push imagen Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          dockerfile: Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ev2-backend-service2:latest
+
+      # 6. Despliegue automático en EC2 vía SSH
+      - name: Deploy en EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST_SERVICE2 }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Ir al directorio del proyecto
+            cd ~/app/backend-service2
+
+            # Actualizar imagen desde Docker Hub
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/ev2-backend-service2:latest
+
+            # Detener y eliminar contenedor anterior si existe
+            docker compose down || true
+
+            # Levantar los servicios con la nueva imagen
+            docker compose up -d
+
+            # Verificar que los contenedores están corriendo
+            docker compose ps
