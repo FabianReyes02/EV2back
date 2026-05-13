@@ -1,4 +1,4 @@
-name: Build and Push to DockerHub (Despachos)
+name: Build and Push to DockerHub
 
 on:
   push:
