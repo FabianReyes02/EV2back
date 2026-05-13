@@ -50,9 +50,11 @@ services:
 
   ms-ventas:
     build:
+      # Contexto relativo a la raíz del proyecto según tu estructura
       context: ./EV2back/back-Ventas_SpringBoot
       dockerfile: Dockerfile
-    image: ${ECR_REGISTRY:-localhost}/ms-ventas:latest
+    # Sincronizado con el IMAGE_NAME de tu build-ventas.yml
+    image: ${DOCKERHUB_USERNAME}/ms-ventas:latest
     container_name: ms_ventas
     restart: unless-stopped
     ports:
@@ -72,9 +74,11 @@ services:
 
   ms-despachos:
     build:
+      # Contexto relativo a la raíz del proyecto según tu estructura
       context: ./EV2back/back-Despachos_SpringBoot
       dockerfile: Dockerfile
-    image: ${ECR_REGISTRY:-localhost}/ms-despachos:latest
+    # Eliminamos la referencia a localhost/ECR y usamos DockerHub
+    image: ${DOCKERHUB_USERNAME}/ms-despachos:latest
     container_name: ms_despachos
     restart: unless-stopped
     ports:
