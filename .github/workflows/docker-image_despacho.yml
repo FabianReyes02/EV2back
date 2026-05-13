@@ -45,8 +45,9 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v5
         with:
-          context: ./EV2back/back-Despachos_SpringBoot
-          file: ./EV2back/back-Despachos_SpringBoot/Dockerfile
+          # Ruta corregida: se elimina el prefijo EV2back/
+          context: ./back-Despachos_SpringBoot
+          file: ./back-Despachos_SpringBoot/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
