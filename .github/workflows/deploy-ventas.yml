@@ -38,8 +38,10 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./back-Ventas_SpringBoot
+          file: ./back-Ventas_SpringBoot/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           no-cache: true
+          target: production
 
