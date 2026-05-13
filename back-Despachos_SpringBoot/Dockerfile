@@ -4,8 +4,8 @@ WORKDIR /build
 
 # Al estar el contexto en la raíz del microservicio, 
 # el pom.xml y src están directamente disponibles.
-COPY pom.xml .
-COPY src ./src
+COPY Springboot-API-REST-DESPACHO/pom.xml .
+COPY Springboot-API-REST-DESPACHO/src ./src
 
 # Compilar y empaquetar la aplicación
 RUN mvn clean package -DskipTests
