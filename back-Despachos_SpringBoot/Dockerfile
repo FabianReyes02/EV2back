@@ -2,9 +2,10 @@
 FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /build
 
-# Copiar archivos del proyecto
-COPY Springboot-API-REST-DESPACHO/pom.xml .
-COPY Springboot-API-REST-DESPACHO/src ./src
+# Al estar el contexto en la raíz del microservicio, 
+# el pom.xml y src están directamente disponibles.
+COPY pom.xml .
+COPY src ./src
 
 # Compilar y empaquetar la aplicación
 RUN mvn clean package -DskipTests
@@ -14,7 +15,9 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Copiar JAR desde el stage anterior
-COPY --from=builder /build/target/Springboot-API-REST-DESPACHO-0.0.1-SNAPSHOT.jar app.jar
+# Nota: Verifica que el nombre del JAR generado en la carpeta target 
+# sea exactamente este.
+COPY --from=builder /build/target/*.jar app.jar
 
 # Variables de entorno por defecto
 ENV SERVER_PORT=8081
