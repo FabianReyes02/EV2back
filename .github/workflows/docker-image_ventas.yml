@@ -3,7 +3,7 @@ name: Build and Push MS-Ventas to DockerHub
 on:
   push:
     branches:
-      - deploy
+      - main
     paths:
       - 'EV2back/back-Ventas_SpringBoot/**'
       - '.github/workflows/docker-image_ventas.yml'
