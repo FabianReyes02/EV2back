@@ -13,6 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug repo structure
+        run: |
+          echo "PWD:"
+          pwd
+          echo "Top-level:"
+          ls -la
+          echo "Check ./back:"
+          ls -la back || true
+          echo "Check ./back/EV2back:"
+          ls -la back/EV2back || true
+          echo "Check ./back/EV2back/back-Despachos_SpringBoot:"
+          ls -la back/EV2back/back-Despachos_SpringBoot || true
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
