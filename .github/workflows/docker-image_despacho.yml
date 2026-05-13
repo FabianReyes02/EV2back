@@ -5,10 +5,8 @@ on:
     branches:
       - deploy
     paths:
-      # Se activa solo con cambios en la lógica de Despachos o en este workflow
       - 'EV2back/back-Despachos_SpringBoot/**'
       - '.github/workflows/build-despachos.yml'
-
 env:
   REGISTRY: docker.io
   IMAGE_NAME: ms-despachos
@@ -47,7 +45,6 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v5
         with:
-          # Contexto específico basado en tu estructura de carpetas
           context: ./EV2back/back-Despachos_SpringBoot
           file: ./EV2back/back-Despachos_SpringBoot/Dockerfile
           push: true
@@ -57,4 +54,4 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Image digest
-        run: echo "Digest de la imagen despachos: ${{ steps.docker_build.outputs.digest }}"
+        run: echo "Digest de la imagen despachos ${{ steps.docker_build.outputs.digest }}"
