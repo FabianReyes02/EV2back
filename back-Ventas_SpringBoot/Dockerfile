@@ -4,8 +4,8 @@ WORKDIR /build
 
 # Al estar el contexto de Actions en la raíz del microservicio,
 # copiamos directamente los archivos que están en esa ubicación.
-COPY pom.xml .
-COPY src ./src
+COPY Springboot-API-REST/pom.xml .
+COPY Springboot-API-REST/src ./src
 
 # Compilar y empaquetar la aplicación
 RUN mvn clean package -DskipTests
