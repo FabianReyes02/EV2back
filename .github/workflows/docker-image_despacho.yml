@@ -3,7 +3,7 @@ name: Build and Push MS-Despachos to DockerHub
 on:
   push:
     branches:
-      - deploy
+      - main
     paths:
       - 'EV2back/back-Despachos_SpringBoot/**'
       - '.github/workflows/build-despachos.yml'
