@@ -42,6 +42,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           no-cache: true
-          file: Dockerfile
+          file: Springboot-API-REST-DESPACHO/Dockerfile
+
 
 
