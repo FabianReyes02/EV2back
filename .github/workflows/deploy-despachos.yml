@@ -43,7 +43,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           no-cache: true
-          file: Springboot-API-REST-DESPACHO/Dockerfile
+          file: back-Despachos_SpringBoot/Springboot-API-REST-DESPACHO/Dockerfile
+
 
 
 
