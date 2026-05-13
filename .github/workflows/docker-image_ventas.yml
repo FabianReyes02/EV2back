@@ -7,6 +7,8 @@ on:
     paths:
       - 'EV2back/back-Ventas_SpringBoot/**'
       - '.github/workflows/docker-image_ventas.yml'
+  # PERMITE EJECUCIÓN MANUAL
+  workflow_dispatch:
 
 env:
   REGISTRY: docker.io
