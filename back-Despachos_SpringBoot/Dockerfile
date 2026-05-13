@@ -1,22 +1,19 @@
-# Stage 1: Build
-FROM maven:3.9-eclipse-temurin-17 AS builder
+# Stage 1: Build - Actualizado a JDK 25
+FROM maven:3.9-eclipse-temurin-25-alpine AS builder
 WORKDIR /build
 
-# Al estar el contexto en la raíz del microservicio, 
-# el pom.xml y src están directamente disponibles.
+# Copiamos desde la subcarpeta específica del proyecto de Despachos
 COPY Springboot-API-REST-DESPACHO/pom.xml .
 COPY Springboot-API-REST-DESPACHO/src ./src
 
 # Compilar y empaquetar la aplicación
 RUN mvn clean package -DskipTests
 
-# Stage 2: Runtime
-FROM eclipse-temurin:17-jre-alpine
+# Stage 2: Runtime - Actualizado a JRE 25 para soporte de Java 25
+FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 
-# Copiar JAR desde el stage anterior
-# Nota: Verifica que el nombre del JAR generado en la carpeta target 
-# sea exactamente este.
+# Copiar el JAR generado (usamos comodín para mayor flexibilidad)
 COPY --from=builder /build/target/*.jar app.jar
 
 # Variables de entorno por defecto
