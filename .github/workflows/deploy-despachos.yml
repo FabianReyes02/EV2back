@@ -50,13 +50,13 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./back/EV2back/back-Despachos_SpringBoot
+          context: ./back-Despachos_SpringBoot
+          file: ./back-Despachos_SpringBoot/Dockerfile
 
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           no-cache: true
-          dockerfile: Dockerfile
 
 
 
