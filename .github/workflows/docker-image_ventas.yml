@@ -5,6 +5,7 @@ on:
     branches:
       - deploy
     paths:
+      # Solo se activa si hay cambios en la carpeta de Ventas o en este workflow
       - 'EV2back/back-Ventas_SpringBoot/**'
       - '.github/workflows/build-ventas.yml'
 
@@ -39,15 +40,16 @@ jobs:
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push MS-Ventas
+        # Se agrega el ID para que el siguiente paso pueda leer los outputs
+        id: docker_build 
         uses: docker/build-push-action@v5
         with:
           context: ./EV2back/back-Ventas_SpringBoot
-          dockerfile: ./EV2back/back-Ventas_SpringBoot/Dockerfile
+          file: ./EV2back/back-Ventas_SpringBoot/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -55,4 +57,5 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+        # Ahora el ID coincide con el paso anterior
+        run: echo "Digest de la imagen: ${{ steps.docker_build.outputs.digest }}"
