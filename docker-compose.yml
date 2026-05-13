@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+
+  # ==================== BASES DE DATOS ====================
+  
+  db-ventas:
+    image: mysql:8.0
+    container_name: mysql_db_ventas
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root123}
+      MYSQL_DATABASE: ${DB_NAME_VENTAS:-db_ventas}
+      MYSQL_USER: ${DB_USERNAME:-admin}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root123}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data_ventas:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-network
+
+  db-despachos:
+    image: mysql:8.0
+    container_name: mysql_db_despachos
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root123}
+      MYSQL_DATABASE: ${DB_NAME_DESPACHOS:-db_despachos}
+      MYSQL_USER: ${DB_USERNAME:-admin}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root123}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data_despachos:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-network
+
+  # ==================== MICROSERVICIOS ====================
+
+  ms-ventas:
+    build:
+      context: ./EV2back/back-Ventas_SpringBoot
+      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY:-localhost}/ms-ventas:latest
+    container_name: ms_ventas
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DB_ENDPOINT: db-ventas
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME_VENTAS:-db_ventas}
+      DB_USERNAME: ${DB_USERNAME:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-root123}
+      SERVER_PORT: 8080
+    depends_on:
+      db-ventas:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+  ms-despachos:
+    build:
+      context: ./EV2back/back-Despachos_SpringBoot
+      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY:-localhost}/ms-despachos:latest
+    container_name: ms_despachos
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      DB_ENDPOINT: db-despachos
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME_DESPACHOS:-db_despachos}
+      DB_USERNAME: ${DB_USERNAME:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-root123}
+      SERVER_PORT: 8081
+    depends_on:
+      db-despachos:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+# ==================== VOLÚMENES ====================
+volumes:
+  mysql_data_ventas:
+    driver: local
+  mysql_data_despachos:
+    driver: local
+
+# ==================== RED ====================
+networks:
+  backend-network:
+    driver: bridge
