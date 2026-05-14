@@ -48,8 +48,15 @@ public class DespachoController {
     @Operation(summary = "Obtener todos los despachos")
     @GetMapping
     public ResponseEntity<List<Despacho>> getAllDespachos() {
-        return ResponseEntity.ok(despachoService.findAllDespachos());
+        // Mockeado para presentación: evitar dependencia de MySQL
+        // return ResponseEntity.ok(despachoService.findAllDespachos());
+        return ResponseEntity.ok(List.of(
+                new Despacho(101L, java.time.LocalDate.of(2026, 5, 2), "LXHK33", 1, 5001L, "Av. Apoquindo 4501, Las Condes, Santiago", 1250000L, true),
+                new Despacho(102L, java.time.LocalDate.of(2026, 5, 6), "JKLZ98", 2, 5002L, "Av. Grecia 320, Ñuñoa, Santiago", 980000L, false),
+                new Despacho(103L, java.time.LocalDate.of(2026, 5, 10), "PTAM72", 1, 5003L, "Camino a San Antonio 1205, Maipú, Santiago", 1410000L, false)
+        ));
     }
+
 
     @Operation(summary = "Obtener un despacho por ID")
     @GetMapping("/{idDespacho}")

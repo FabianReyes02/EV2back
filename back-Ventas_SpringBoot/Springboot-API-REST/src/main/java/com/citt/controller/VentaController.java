@@ -45,8 +45,15 @@ public class VentaController {
     @GetMapping
     @Operation(summary = "Obtener todas las ventas", description = "Devuelve una lista de todas las ventas")
     public ResponseEntity<List<Venta>> getVentas(){
-        return ResponseEntity.ok(ventaService.findAllVentas());
+        // Mockeado para presentación: evitar dependencia de MySQL
+        // return ResponseEntity.ok(ventaService.findAllVentas());
+        return ResponseEntity.ok(List.of(
+                new Venta(201L, "Av. Libertador Bernardo O'Higgins 1100, Santiago", 850000, java.time.LocalDate.of(2026, 4, 28), true),
+                new Venta(202L, "Ruta 68 Km 23, Talagante", 1235000, java.time.LocalDate.of(2026, 5, 1), false),
+                new Venta(203L, "Av. Balmaceda 760, Valparaíso", 640000, java.time.LocalDate.of(2026, 5, 8), true)
+        ));
     }
+
 
     @GetMapping("/{idVenta}")
     @Operation(summary = "Obtener una venta por ID", description = "Devuelve los detalles de una venta específica")
